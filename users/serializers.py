@@ -4,6 +4,7 @@ from .models import CustomUser
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
+from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -50,7 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
             ),
         )
 
-        # Render the email template
         subject = 'Verify your CommerceHub email'
 
         html_content = render_to_string(
@@ -61,7 +61,6 @@ class UserSerializer(serializers.ModelSerializer):
             }
         )
 
-        # Create an email message
         email = EmailMultiAlternatives(
             subject,
             "Please verify your CommerceHub account.",
@@ -78,9 +77,11 @@ class UserSerializer(serializers.ModelSerializer):
 
         return True
 
+
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
 
@@ -89,14 +90,106 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ["bio", "image"]
 
     def update(self, instance, validated_data):
+
         instance.bio = validated_data.get(
             'bio',
             instance.bio
         )
+
         instance.image = validated_data.get(
             'image',
             instance.image
         )
+
         instance.save()
 
         return instance
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+
+        try:
+            user = CustomUser.objects.get(email=value)
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError(
+                "No user found with this email."
+            )
+
+        reset_token = get_random_string(length=64)
+
+        user.password_reset_token = reset_token
+        user.password_reset_token_created_at = timezone.now()
+
+        user.save(
+            update_fields=[
+                'password_reset_token',
+                'password_reset_token_created_at'
+            ]
+        )
+
+        self.user = user
+
+        return value
+class ResetPasswordSerializer(serializers.Serializer):
+
+    token = serializers.CharField()
+    new_password = serializers.CharField(
+        write_only=True,
+        min_length=8
+    )
+
+    def validate(self, attrs):
+
+        token = attrs.get('token')
+
+        try:
+            user = CustomUser.objects.get(
+                password_reset_token=token
+            )
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError({
+                "token": "Invalid or expired reset token."
+            })
+
+        if not user.password_reset_token_created_at:
+            raise serializers.ValidationError({
+                "token": "Invalid or expired reset token."
+            })
+
+        token_age = (
+            timezone.now()
+            - user.password_reset_token_created_at
+        )
+
+        if token_age.total_seconds() > 3600:
+            raise serializers.ValidationError({
+                "token": "Password reset token has expired."
+            })
+
+        attrs['user'] = user
+
+        return attrs
+
+    def save(self):
+
+        user = self.validated_data['user']
+        new_password = self.validated_data['new_password']
+
+        user.set_password(new_password)
+
+        user.password_reset_token = None
+        user.password_reset_token_created_at = None
+
+        user.save(
+            update_fields=[
+                'password',
+                'password_reset_token',
+                'password_reset_token_created_at'
+            ]
+        )
+
+        return user

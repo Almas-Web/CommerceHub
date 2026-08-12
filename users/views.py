@@ -1,7 +1,13 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserLoginSerializer, UserSerializer, UserUpdateSerializer
+from .serializers import (
+    ResetPasswordSerializer,
+    UserLoginSerializer,
+    UserSerializer,
+    UserUpdateSerializer,
+    ForgotPasswordSerializer
+)
 from .models import CustomUser
 from rest_framework.response import Response
 from django.core.mail import EmailMultiAlternatives
@@ -9,6 +15,7 @@ from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 
 
 class UserSignUp(generics.CreateAPIView):
@@ -68,7 +75,6 @@ class ResendVerificationEmail(generics.GenericAPIView):
         user.verification_token = get_random_string(length=32)
         user.save()
 
-        # Prepare verification link
         verification_link = request.build_absolute_uri(
             reverse(
                 viewname='verify_email',
@@ -78,7 +84,6 @@ class ResendVerificationEmail(generics.GenericAPIView):
             ),
         )
 
-        # Render email template
         subject = 'Verify your CommerceHub email'
 
         html_content = render_to_string(
@@ -89,7 +94,6 @@ class ResendVerificationEmail(generics.GenericAPIView):
             }
         )
 
-        # Create email message
         email_message = EmailMultiAlternatives(
             subject,
             "Please verify your CommerceHub account.",
@@ -107,6 +111,7 @@ class ResendVerificationEmail(generics.GenericAPIView):
         return Response({
             "details": "Verification email sent!",
         }, status=status.HTTP_200_OK)
+
 
 class UserLogin(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
@@ -137,6 +142,7 @@ class UserLogin(generics.GenericAPIView):
             "details": "Invalid credentials",
         }, status=status.HTTP_401_UNAUTHORIZED)
 
+
 class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
@@ -149,3 +155,75 @@ class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
             return UserUpdateSerializer
 
         return UserSerializer
+
+
+class ForgotPasswordView(generics.GenericAPIView):
+    serializer_class = ForgotPasswordSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.user
+
+        reset_token = user.password_reset_token
+
+        reset_link = request.build_absolute_uri(
+            reverse(
+                'reset_password',
+                kwargs={
+                    'token': reset_token
+                }
+            )
+        )
+
+        subject = 'Reset your CommerceHub password'
+
+        html_content = render_to_string(
+            'emails/password_reset_email.html',
+            {
+                'user': user,
+                'reset_link': reset_link
+            }
+        )
+
+        email_message = EmailMultiAlternatives(
+            subject,
+            'Click the link to reset your CommerceHub password.',
+            'noreply@commercehub.com',
+            [user.email]
+        )
+
+        email_message.attach_alternative(
+            html_content,
+            'text/html'
+        )
+
+        email_message.send(fail_silently=False)
+
+        return Response({
+            'details': 'Password reset email sent successfully.'
+        }, status=status.HTTP_200_OK)
+
+class ResetPasswordView(generics.GenericAPIView):
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(
+            data={
+                'token': kwargs.get('token'),
+                'new_password': request.data.get('new_password')
+            }
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response({
+            'details': 'Password reset successfully.'
+        }, status=status.HTTP_200_OK)
