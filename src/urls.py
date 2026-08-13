@@ -13,7 +13,7 @@ urlpatterns = [
     path('api/wishlist/', include('wishlist.urls')),
     path('api/orders/', include('orders.urls')),
     path('api/payments/', include('payments.urls')),
-    #path('api/reviews/', include('reviews.urls')),
+    path('api/reviews/', include('reviews.urls')),
 ]
 
 urlpatterns += static(

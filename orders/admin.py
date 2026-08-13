@@ -43,6 +43,15 @@ class OrderAdmin(admin.ModelAdmin):
         'updated_at',
     )
 
+    fields = (
+        'user',
+        'status',
+        'total_amount',
+        'shipping_address',
+        'created_at',
+        'updated_at',
+    )
+
     inlines = [
         OrderItemInline,
     ]
