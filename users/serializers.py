@@ -1,10 +1,11 @@
 from django.utils.crypto import get_random_string
-from rest_framework import serializers
-from .models import CustomUser
-from django.urls import reverse
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
+from django.urls import reverse
+
+from rest_framework import serializers
+
+from .models import CustomUser
+from .tasks import send_verification_email_task
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -36,49 +37,25 @@ class UserSerializer(serializers.ModelSerializer):
 
         user.save()
 
-        self.send_email(user=user)
-
-        return user
-
-    def send_email(self, user):
-
         verification_link = self.context['request'].build_absolute_uri(
             reverse(
                 viewname='verify_email',
                 kwargs={
                     'token': user.verification_token
                 }
-            ),
+            )
         )
 
-        subject = 'Verify your CommerceHub email'
-
-        html_content = render_to_string(
-            'emails/verification_email.html',
-            {
-                "user": user,
-                "verification_link": verification_link
-            }
+        send_verification_email_task.delay(
+            user.id,
+            verification_link
         )
 
-        email = EmailMultiAlternatives(
-            subject,
-            "Please verify your CommerceHub account.",
-            "noreply@commercehub.com",
-            [user.email]
-        )
-
-        email.attach_alternative(
-            html_content,
-            "text/html"
-        )
-
-        email.send(fail_silently=False)
-
-        return True
+        return user
 
 
 class UserLoginSerializer(serializers.Serializer):
+
     email = serializers.EmailField()
     password = serializers.CharField()
 
@@ -87,7 +64,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ["bio", "image"]
+        fields = [
+            "bio",
+            "image"
+        ]
 
     def update(self, instance, validated_data):
 
@@ -113,15 +93,21 @@ class ForgotPasswordSerializer(serializers.Serializer):
     def validate_email(self, value):
 
         try:
-            user = CustomUser.objects.get(email=value)
+            user = CustomUser.objects.get(
+                email=value
+            )
+
         except CustomUser.DoesNotExist:
             raise serializers.ValidationError(
                 "No user found with this email."
             )
 
-        reset_token = get_random_string(length=64)
+        reset_token = get_random_string(
+            length=64
+        )
 
         user.password_reset_token = reset_token
+
         user.password_reset_token_created_at = timezone.now()
 
         user.save(
@@ -134,9 +120,12 @@ class ForgotPasswordSerializer(serializers.Serializer):
         self.user = user
 
         return value
+
+
 class ResetPasswordSerializer(serializers.Serializer):
 
     token = serializers.CharField()
+
     new_password = serializers.CharField(
         write_only=True,
         min_length=8
@@ -150,6 +139,7 @@ class ResetPasswordSerializer(serializers.Serializer):
             user = CustomUser.objects.get(
                 password_reset_token=token
             )
+
         except CustomUser.DoesNotExist:
             raise serializers.ValidationError({
                 "token": "Invalid or expired reset token."
@@ -177,11 +167,13 @@ class ResetPasswordSerializer(serializers.Serializer):
     def save(self):
 
         user = self.validated_data['user']
+
         new_password = self.validated_data['new_password']
 
         user.set_password(new_password)
 
         user.password_reset_token = None
+
         user.password_reset_token_created_at = None
 
         user.save(
