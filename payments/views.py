@@ -1,12 +1,18 @@
 from django.db import transaction
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from .models import Payment
 from .serializers import PaymentSerializer
 from orders.models import Order
 
 
+# Payment Create
+
+@extend_schema(
+    tags=['Payments']
+)
 class PaymentCreateView(generics.CreateAPIView):
 
     serializer_class = PaymentSerializer
@@ -87,6 +93,13 @@ class PaymentCreateView(generics.CreateAPIView):
             serializer.data,
             status=status.HTTP_201_CREATED
         )
+
+
+# Payment Status Update
+
+@extend_schema(
+    tags=['Payments']
+)
 class PaymentStatusUpdateView(generics.UpdateAPIView):
 
     serializer_class = PaymentSerializer

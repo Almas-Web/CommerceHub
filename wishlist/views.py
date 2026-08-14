@@ -1,11 +1,15 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from .models import Wishlist
 from .serializers import WishlistSerializer
 from products.models import Product
 
 
+@extend_schema(
+    tags=['Wishlist']
+)
 class WishlistView(generics.RetrieveUpdateAPIView):
     serializer_class = WishlistSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -20,6 +24,9 @@ class WishlistView(generics.RetrieveUpdateAPIView):
         serializer.save(user=self.request.user)
 
 
+@extend_schema(
+    tags=['Wishlist']
+)
 class AddToWishlistView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -44,6 +51,9 @@ class AddToWishlistView(generics.GenericAPIView):
         )
 
 
+@extend_schema(
+    tags=['Wishlist']
+)
 class RemoveFromWishlistView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 

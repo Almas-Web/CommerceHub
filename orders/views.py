@@ -1,10 +1,22 @@
 from django.db import transaction
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
 
 from .models import Order, OrderItem
-from .serializers import AdminOrderUpdateSerializer, OrderSerializer, SellerOrderSerializer
+from .serializers import (
+    AdminOrderUpdateSerializer,
+    OrderSerializer,
+    SellerOrderSerializer
+)
 from cart.models import Cart
+
+
+# Order List & Create
+
+@extend_schema(
+    tags=['Orders']
+)
 class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -89,6 +101,12 @@ class OrderListCreateView(generics.ListCreateAPIView):
             status=status.HTTP_201_CREATED
         )
 
+
+# Order Detail
+
+@extend_schema(
+    tags=['Orders']
+)
 class OrderDetailView(generics.RetrieveAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -98,6 +116,12 @@ class OrderDetailView(generics.RetrieveAPIView):
             user=self.request.user
         ).prefetch_related('items__product')
 
+
+# Cancel Order
+
+@extend_schema(
+    tags=['Orders']
+)
 class CancelOrderView(generics.GenericAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -138,6 +162,12 @@ class CancelOrderView(generics.GenericAPIView):
             status=status.HTTP_200_OK
         )
 
+
+# Admin Order List
+
+@extend_schema(
+    tags=['Orders']
+)
 class AdminOrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -151,6 +181,11 @@ class AdminOrderListView(generics.ListAPIView):
         ).select_related('user')
 
 
+# Admin Order Status Update
+
+@extend_schema(
+    tags=['Orders']
+)
 class AdminOrderStatusUpdateView(generics.UpdateAPIView):
     serializer_class = AdminOrderUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -202,6 +237,12 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
             status=status.HTTP_200_OK
         )
 
+
+# Seller Order List
+
+@extend_schema(
+    tags=['Orders']
+)
 class SellerOrderListView(generics.ListAPIView):
     serializer_class = SellerOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -217,6 +258,12 @@ class SellerOrderListView(generics.ListAPIView):
             'items__product'
         ).select_related('user')
 
+
+# Seller Order Status Update
+
+@extend_schema(
+    tags=['Orders']
+)
 class SellerOrderStatusUpdateView(generics.UpdateAPIView):
     serializer_class = AdminOrderUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]

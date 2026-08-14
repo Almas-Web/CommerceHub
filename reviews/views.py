@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema
 
 from .models import Review
 from .serializers import ReviewSerializer
@@ -9,6 +10,11 @@ from .permissions import IsCustomer
 from orders.models import OrderItem, Order
 
 
+# Review Create
+
+@extend_schema(
+    tags=['Reviews']
+)
 class ReviewCreateView(generics.CreateAPIView):
 
     queryset = Review.objects.all()
@@ -49,6 +55,12 @@ class ReviewCreateView(generics.CreateAPIView):
 
         serializer.save(user=user)
 
+
+# Product Review List
+
+@extend_schema(
+    tags=['Reviews']
+)
 class ProductReviewListView(generics.ListAPIView):
 
     serializer_class = ReviewSerializer
@@ -59,8 +71,17 @@ class ProductReviewListView(generics.ListAPIView):
 
         return Review.objects.filter(
             product_id=product_id
-        ).select_related("user", "product").order_by("-created_at")
+        ).select_related(
+            "user",
+            "product"
+        ).order_by("-created_at")
 
+
+# Review Update
+
+@extend_schema(
+    tags=['Reviews']
+)
 class ReviewUpdateView(generics.UpdateAPIView):
 
     serializer_class = ReviewSerializer
@@ -74,6 +95,12 @@ class ReviewUpdateView(generics.UpdateAPIView):
             user=self.request.user
         )
 
+
+# Review Delete
+
+@extend_schema(
+    tags=['Reviews']
+)
 class ReviewDeleteView(generics.DestroyAPIView):
 
     serializer_class = ReviewSerializer

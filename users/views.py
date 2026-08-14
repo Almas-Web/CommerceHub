@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import (
     ResetPasswordSerializer,
     UserLoginSerializer,
@@ -8,7 +9,9 @@ from .serializers import (
     UserUpdateSerializer,
     ForgotPasswordSerializer
 )
+
 from .models import CustomUser
+
 from rest_framework.response import Response
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -17,11 +20,27 @@ from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 
+from drf_spectacular.utils import extend_schema
 
+
+# User Signup
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='Register a new user',
+    description='Create a new CommerceHub customer or seller account.'
+)
 class UserSignUp(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 
+# Verify Email
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='Verify email address',
+    description='Verify a user account using the email verification token.'
+)
 class VerifyEmail(generics.GenericAPIView):
     swagger_fake_view = True
 
@@ -49,6 +68,13 @@ class VerifyEmail(generics.GenericAPIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
+# Resend Verification Email
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='Resend verification email',
+    description='Send a new email verification link to an unverified user.'
+)
 class ResendVerificationEmail(generics.GenericAPIView):
     swagger_fake_view = True
 
@@ -113,6 +139,13 @@ class ResendVerificationEmail(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
 
 
+# User Login
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='User login',
+    description='Authenticate a verified user and return JWT access and refresh tokens.'
+)
 class UserLogin(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
 
@@ -143,6 +176,13 @@ class UserLogin(generics.GenericAPIView):
         }, status=status.HTTP_401_UNAUTHORIZED)
 
 
+# User Profile
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='Get or update user profile',
+    description='Retrieve the authenticated user profile or update profile information.'
+)
 class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
@@ -157,6 +197,13 @@ class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
         return UserSerializer
 
 
+# Forgot Password
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='Request password reset',
+    description='Send a password reset email to the user.'
+)
 class ForgotPasswordView(generics.GenericAPIView):
     serializer_class = ForgotPasswordSerializer
 
@@ -208,11 +255,18 @@ class ForgotPasswordView(generics.GenericAPIView):
             'details': 'Password reset email sent successfully.'
         }, status=status.HTTP_200_OK)
 
+
+# Reset Password
+
+@extend_schema(
+    tags=['Authentication & Users'],
+    summary='Reset password',
+    description='Reset the user password using a valid password reset token.'
+)
 class ResetPasswordView(generics.GenericAPIView):
     serializer_class = ResetPasswordSerializer
 
     def post(self, request, *args, **kwargs):
-
         serializer = self.get_serializer(
             data={
                 'token': kwargs.get('token'),

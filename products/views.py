@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -13,6 +14,10 @@ class ProductPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 50
 
+
+@extend_schema(
+    tags=['Products']
+)
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -57,6 +62,9 @@ class ProductListCreateView(generics.ListCreateAPIView):
         serializer.save(seller=self.request.user)
 
 
+@extend_schema(
+    tags=['Products']
+)
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer

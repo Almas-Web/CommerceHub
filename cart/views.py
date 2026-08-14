@@ -2,12 +2,16 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from products.models import Product
 from .models import Cart, CartItem
 from .serializers import CartSerializer
 
 
+@extend_schema(
+    tags=['Cart']
+)
 class CartView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -80,6 +84,11 @@ class CartView(APIView):
             CartSerializer(cart).data,
             status=status.HTTP_201_CREATED
         )
+
+
+@extend_schema(
+    tags=['Cart']
+)
 class CartItemView(APIView):
     permission_classes = [IsAuthenticated]
 

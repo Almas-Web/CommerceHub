@@ -14,13 +14,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5bduf9=t&(ii*-%(5r!v9%)_+hnol^181y#xe*xvf76u!28cr3'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -84,9 +81,13 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+    },
 }
 
 
@@ -155,8 +156,57 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
-}
+    # OpenAPI / Swagger
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 
+}
+# API Documentation Settings
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'CommerceHub API',
+    'DESCRIPTION': 'Production-ready E-Commerce REST API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    'COMPONENT_SPLIT_REQUEST': True,
+
+    'TAGS': [
+    {
+        'name': 'Authentication & Users',
+        'description': 'User registration, authentication, email verification, profile and password management.',
+    },
+    {
+        'name': 'Categories',
+        'description': 'Product category management.',
+    },
+    {
+        'name': 'Products',
+        'description': 'Product management and product discovery.',
+    },
+    {
+        'name': 'Wishlist',
+        'description': 'Customer wishlist management.',
+    },
+    {
+        'name': 'Cart',
+        'description': 'Shopping cart management.',
+    },
+    {
+        'name': 'Orders',
+        'description': 'Order creation, management and order history.',
+    },
+    {
+        'name': 'Payments',
+        'description': 'Payment processing and payment management.',
+    },
+    {
+        'name': 'Reviews',
+        'description': 'Product reviews and ratings.',
+    },
+],
+    
+}
 # JWT Settings
 
 SIMPLE_JWT = {

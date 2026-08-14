@@ -1,0 +1,416 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-08-12T19:20:06.456Z",
+    "user": 2,
+    "content_type": 6,
+    "object_id": "2",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-08-13T05:01:59.309Z",
+    "user": 2,
+    "content_type": 6,
+    "object_id": "4",
+    "object_repr": "customer2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-08-13T05:04:14.435Z",
+    "user": 2,
+    "content_type": 6,
+    "object_id": "4",
+    "object_repr": "customer2",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-08-13T15:33:58.821Z",
+    "user": 2,
+    "content_type": 12,
+    "object_id": "2",
+    "object_repr": "Order #2",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Status\"]}}]"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "08p0eucke1w1bpudiq0mtm82usbltbis",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAUBf-FtSEUuFhduvcbyH2AVA0kpV0Z_12bdKHbMzPnpSKuS4lrT3OcRJ2VVYffjZAfqW5A7lhvTXOryzyR3hS9066vTdLzsrt_BwV7-dbjAGwwszMiR0Ym8UJjZqEBwDsgiyYjhxzYueSCZMfMdApgM3gD6v0BIZU5Og:1wuNXB:uODRIUEJhWp85mqg5Hrvy4FtF-llCHQxSkCMDR7Jd0E",
+    "expire_date": "2026-08-27T04:59:17.443Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "fb7gajv6s0ht2udkgfx27i5w9nc1bq2n",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAUBf-FtSEUuFhduvcbyH2AVA0kpV0Z_12bdKHbMzPnpSKuS4lrT3OcRJ2VVYffjZAfqW5A7lhvTXOryzyR3hS9066vTdLzsrt_BwV7-dbjAGwwszMiR0Ym8UJjZqEBwDsgiyYjhxzYueSCZMfMdApgM3gD6v0BIZU5Og:1wuEMQ:k5oII_0c2GiwwXhK4dX6kX0HGImT9CYXt79-Z9ZO4pc",
+    "expire_date": "2026-08-26T19:11:34.593Z"
+  }
+},
+{
+  "model": "users.customuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$7lQ8Qzn24STzJoW3wqCHHM$Au3/h0KLkPoKJTSY8EeB0/8vw53r8Y33h+yzh2DgCB0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "testuser",
+    "first_name": "",
+    "last_name": "",
+    "email": "almashossen67@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-12T17:57:07.793Z",
+    "role": "SELLER",
+    "is_verified": true,
+    "verification_token": null,
+    "password_reset_token": null,
+    "password_reset_token_created_at": null,
+    "bio": "Professional CommerceHub customer",
+    "image": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.customuser",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$sd5WnwZM8ACAtSRu5OFUi2$1PuGcWX7JkwXfzvFX18T+bBAiUD/Lo8Nyjf881gOMyM=",
+    "last_login": "2026-08-13T04:59:17.430Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-12T19:08:29Z",
+    "role": "ADMIN",
+    "is_verified": true,
+    "verification_token": null,
+    "password_reset_token": null,
+    "password_reset_token_created_at": null,
+    "bio": "",
+    "image": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.customuser",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$HckHgam8GA3FzKrF91J8t0$xbjskSWW/WRoD4PQFfg/CqMAr7vO0sfsreCufC9mprg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "customer1",
+    "first_name": "",
+    "last_name": "",
+    "email": "customer1@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-12T20:11:11.381Z",
+    "role": "CUSTOMER",
+    "is_verified": false,
+    "verification_token": "0j84ySuAhLCVjkBOl5nmRaoIm6VdTPAr",
+    "password_reset_token": null,
+    "password_reset_token_created_at": null,
+    "bio": "",
+    "image": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.customuser",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$ZAif575oc0TqiwRwiywi47$kck08Ikk99khBfwZ5H4uWcMbyLTg4TJlpsahOGoQDX4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "customer2",
+    "first_name": "",
+    "last_name": "",
+    "email": "customer2@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-13T04:59:27Z",
+    "role": "CUSTOMER",
+    "is_verified": true,
+    "verification_token": null,
+    "password_reset_token": null,
+    "password_reset_token_created_at": null,
+    "bio": "",
+    "image": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.customuser",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$tibZgmAmo6vd9yMoS4LFCb$Hy89yQBzd49VYCbiW2ONM6Lg12fgqL0V6r2vKAsY79U=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "seller1",
+    "first_name": "",
+    "last_name": "",
+    "email": "seller@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-13T11:01:50.728Z",
+    "role": "SELLER",
+    "is_verified": true,
+    "verification_token": null,
+    "password_reset_token": null,
+    "password_reset_token_created_at": null,
+    "bio": "",
+    "image": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "products.product",
+  "pk": 1,
+  "fields": {
+    "name": "iPhone 15 Pro",
+    "description": "Premium Apple smartphone",
+    "price": "99999.00",
+    "stock": 15,
+    "category": 1,
+    "seller": 2,
+    "image": "",
+    "is_active": true,
+    "created_at": "2026-08-12T19:26:11.704Z",
+    "updated_at": "2026-08-12T19:27:36.808Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 2,
+  "fields": {
+    "name": "Samsung Galaxy S24",
+    "description": "Premium Samsung smartphone",
+    "price": "89999.00",
+    "stock": 20,
+    "category": 1,
+    "seller": 2,
+    "image": "",
+    "is_active": true,
+    "created_at": "2026-08-12T19:28:11.721Z",
+    "updated_at": "2026-08-12T19:28:11.721Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 3,
+  "fields": {
+    "name": "Nike Air Max 270",
+    "description": "Comfortable running shoes",
+    "price": "12500.00",
+    "stock": 25,
+    "category": 2,
+    "seller": 2,
+    "image": "",
+    "is_active": true,
+    "created_at": "2026-08-12T19:28:25.362Z",
+    "updated_at": "2026-08-12T19:28:25.362Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 4,
+  "fields": {
+    "name": "Customer Test Product",
+    "description": "Testing customer product permission",
+    "price": "1000.00",
+    "stock": 10,
+    "category": 1,
+    "seller": 1,
+    "image": "",
+    "is_active": true,
+    "created_at": "2026-08-12T20:08:56.400Z",
+    "updated_at": "2026-08-12T20:08:56.400Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 5,
+  "fields": {
+    "name": "Image Test Product Updated",
+    "description": "Updated product description",
+    "price": "1800.00",
+    "stock": 15,
+    "category": 1,
+    "seller": 1,
+    "image": "product_images/6E470018-2484-416B-88D3-62CCB5C12D78.png",
+    "is_active": false,
+    "created_at": "2026-08-13T04:50:52.152Z",
+    "updated_at": "2026-08-13T04:54:10.382Z"
+  }
+},
+{
+  "model": "products.product",
+  "pk": 7,
+  "fields": {
+    "name": "Seller Test Laptop",
+    "description": "Laptop created by seller for order management testing.",
+    "price": "50000.00",
+    "stock": 9,
+    "category": 1,
+    "seller": 5,
+    "image": "",
+    "is_active": true,
+    "created_at": "2026-08-13T11:14:54.812Z",
+    "updated_at": "2026-08-13T11:14:54.812Z"
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 1,
+  "fields": {
+    "name": "Electronic Devices",
+    "description": "Mobile phones, laptops and electronic devices",
+    "created_at": "2026-08-12T19:23:27.917Z"
+  }
+},
+{
+  "model": "categories.category",
+  "pk": 2,
+  "fields": {
+    "name": "Clothing",
+    "description": "Fashion and clothing products",
+    "created_at": "2026-08-12T19:24:06.526Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "created_at": "2026-08-12T19:35:17.809Z",
+    "updated_at": "2026-08-12T19:35:17.809Z"
+  }
+},
+{
+  "model": "cart.cart",
+  "pk": 2,
+  "fields": {
+    "user": 4,
+    "created_at": "2026-08-13T10:34:35.298Z",
+    "updated_at": "2026-08-13T10:34:35.298Z"
+  }
+},
+{
+  "model": "cart.cartitem",
+  "pk": 2,
+  "fields": {
+    "cart": 1,
+    "product": 1,
+    "quantity": 14
+  }
+},
+{
+  "model": "wishlist.wishlist",
+  "pk": 1,
+  "fields": {
+    "user": 4,
+    "created_at": "2026-08-13T05:22:24.452Z",
+    "products": [
+      1
+    ]
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 1,
+  "fields": {
+    "user": 4,
+    "status": "CANCELLED",
+    "total_amount": "199998.00",
+    "shipping_address": "Barishal, Bangladesh",
+    "created_at": "2026-08-13T10:36:47.702Z",
+    "updated_at": "2026-08-13T10:43:26.627Z"
+  }
+},
+{
+  "model": "orders.order",
+  "pk": 2,
+  "fields": {
+    "user": 4,
+    "status": "DELIVERED",
+    "total_amount": "50000.00",
+    "shipping_address": "Barishal, Bangladesh",
+    "created_at": "2026-08-13T15:06:43.994Z",
+    "updated_at": "2026-08-13T15:33:58.816Z"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "product": 1,
+    "quantity": 2,
+    "price": "99999.00"
+  }
+},
+{
+  "model": "orders.orderitem",
+  "pk": 2,
+  "fields": {
+    "order": 2,
+    "product": 7,
+    "quantity": 1,
+    "price": "50000.00"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 1,
+  "fields": {
+    "order": 2,
+    "user": 4,
+    "transaction_id": "TXN-10002",
+    "amount": "50000.00",
+    "method": "MOBILE_BANKING",
+    "status": "REFUNDED",
+    "created_at": "2026-08-13T15:07:08.673Z"
+  }
+},
+{
+  "model": "reviews.review",
+  "pk": 1,
+  "fields": {
+    "product": 1,
+    "user": 4,
+    "rating": 5,
+    "comment": "Excellent product!",
+    "created_at": "2026-08-13T15:23:02.069Z",
+    "updated_at": "2026-08-13T15:23:02.069Z"
+  }
+}
+]
