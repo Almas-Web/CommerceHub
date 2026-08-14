@@ -16,15 +16,12 @@ jobs:
     services:
       postgres:
         image: postgres:16
-
         env:
           POSTGRES_DB: commercehub
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-
         ports:
           - 5432:5432
-
         options: >-
           --health-cmd="pg_isready -U postgres -d commercehub"
           --health-interval=10s
@@ -33,7 +30,6 @@ jobs:
 
       redis:
         image: redis:7-alpine
-
         ports:
           - 6379:6379
 
@@ -54,33 +50,39 @@ jobs:
 
       - name: Django system check
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DB_NAME: commercehub
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
-          REDIS_URL: redis://127.0.0.1:6379/0
+          CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+          CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
         run: |
           python manage.py check
 
       - name: Run migrations
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DB_NAME: commercehub
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
-          REDIS_URL: redis://127.0.0.1:6379/0
+          CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+          CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
         run: |
           python manage.py migrate
 
       - name: Run tests
         env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DB_NAME: commercehub
           DB_USER: postgres
           DB_PASSWORD: postgres
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
-          REDIS_URL: redis://127.0.0.1:6379/0
+          CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+          CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
         run: |
           pytest -v
