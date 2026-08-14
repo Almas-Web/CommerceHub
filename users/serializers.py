@@ -18,8 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'password',
             'role',
-            'bio',
-            'image'
+            'bio'
         ]
 
         extra_kwargs = {
@@ -29,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+
         user = CustomUser(**validated_data)
 
         user.set_password(validated_data['password'])
@@ -65,8 +65,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [
-            "bio",
-            "image"
+            "bio"
         ]
 
     def update(self, instance, validated_data):
@@ -74,11 +73,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.bio = validated_data.get(
             'bio',
             instance.bio
-        )
-
-        instance.image = validated_data.get(
-            'image',
-            instance.image
         )
 
         instance.save()
