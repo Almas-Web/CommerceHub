@@ -1,25 +1,54 @@
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema
+
+from drf_spectacular.utils import extend_schema, inline_serializer
 
 from products.models import Product
 from .models import Cart, CartItem
 from .serializers import CartSerializer
 
 
-@extend_schema(
-    tags=['Cart']
+CartItemRequestSerializer = inline_serializer(
+    name='CartItemRequest',
+    fields={
+        'product': serializers.IntegerField(),
+        'quantity': serializers.IntegerField(
+            required=False,
+            default=1
+        ),
+    }
 )
+
+CartQuantityRequestSerializer = inline_serializer(
+    name='CartQuantityRequest',
+    fields={
+        'quantity': serializers.IntegerField(),
+    }
+)
+
+
+@extend_schema(tags=['Cart'])
 class CartView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        responses=CartSerializer
+    )
     def get(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart, created = Cart.objects.get_or_create(
+            user=request.user
+        )
+
         serializer = CartSerializer(cart)
+
         return Response(serializer.data)
 
+    @extend_schema(
+        request=CartItemRequestSerializer,
+        responses=CartSerializer
+    )
     def post(self, request):
         product_id = request.data.get('product')
         quantity = request.data.get('quantity', 1)
@@ -58,7 +87,9 @@ class CartView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart, created = Cart.objects.get_or_create(
+            user=request.user
+        )
 
         cart_item, item_created = CartItem.objects.get_or_create(
             cart=cart,
@@ -86,12 +117,14 @@ class CartView(APIView):
         )
 
 
-@extend_schema(
-    tags=['Cart']
-)
+@extend_schema(tags=['Cart'])
 class CartItemView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=CartQuantityRequestSerializer,
+        responses=CartSerializer
+    )
     def patch(self, request, item_id):
         try:
             cart_item = CartItem.objects.get(
@@ -140,6 +173,9 @@ class CartItemView(APIView):
             status=status.HTTP_200_OK
         )
 
+    @extend_schema(
+        responses=CartSerializer
+    )
     def delete(self, request, item_id):
         try:
             cart_item = CartItem.objects.get(

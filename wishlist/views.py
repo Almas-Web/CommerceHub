@@ -1,5 +1,6 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+
 from drf_spectacular.utils import extend_schema
 
 from .models import Wishlist
@@ -7,9 +8,7 @@ from .serializers import WishlistSerializer
 from products.models import Product
 
 
-@extend_schema(
-    tags=['Wishlist']
-)
+@extend_schema(tags=['Wishlist'])
 class WishlistView(generics.RetrieveUpdateAPIView):
     serializer_class = WishlistSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -18,6 +17,7 @@ class WishlistView(generics.RetrieveUpdateAPIView):
         wishlist, created = Wishlist.objects.get_or_create(
             user=self.request.user
         )
+
         return wishlist
 
     def perform_update(self, serializer):
@@ -25,9 +25,20 @@ class WishlistView(generics.RetrieveUpdateAPIView):
 
 
 @extend_schema(
-    tags=['Wishlist']
+    tags=['Wishlist'],
+    responses={
+        200: {
+            'type': 'object',
+            'properties': {
+                'detail': {
+                    'type': 'string'
+                }
+            }
+        }
+    }
 )
 class AddToWishlistView(generics.GenericAPIView):
+    serializer_class = WishlistSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, product_id):
@@ -52,9 +63,20 @@ class AddToWishlistView(generics.GenericAPIView):
 
 
 @extend_schema(
-    tags=['Wishlist']
+    tags=['Wishlist'],
+    responses={
+        200: {
+            'type': 'object',
+            'properties': {
+                'detail': {
+                    'type': 'string'
+                }
+            }
+        }
+    }
 )
 class RemoveFromWishlistView(generics.GenericAPIView):
+    serializer_class = WishlistSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, product_id):

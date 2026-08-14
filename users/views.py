@@ -1,4 +1,4 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils.crypto import get_random_string
 from django.urls import reverse
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, inline_serializer
 
 from .serializers import (
     ResetPasswordSerializer,
@@ -24,6 +24,21 @@ from .tasks import (
 )
 
 
+VerificationEmailRequestSerializer = inline_serializer(
+    name='VerificationEmailRequest',
+    fields={
+        'email': serializers.EmailField()
+    }
+)
+
+MessageResponseSerializer = inline_serializer(
+    name='MessageResponse',
+    fields={
+        'details': serializers.CharField()
+    }
+)
+
+
 @extend_schema(
     tags=['Authentication & Users'],
     summary='Register a new user',
@@ -36,19 +51,19 @@ class UserSignUp(generics.CreateAPIView):
 @extend_schema(
     tags=['Authentication & Users'],
     summary='Verify email address',
-    description='Verify a user account using the email verification token.'
+    description='Verify a user account using the email verification token.',
+    responses=MessageResponseSerializer
 )
 class VerifyEmail(generics.GenericAPIView):
     swagger_fake_view = True
+    serializer_class = VerificationEmailRequestSerializer
 
     def get(self, request, token):
-
         user = CustomUser.objects.filter(
             verification_token=token
         ).first()
 
         if user:
-
             if user.is_verified:
                 return Response({
                     "details": "Email already verified!",
@@ -71,13 +86,15 @@ class VerifyEmail(generics.GenericAPIView):
 @extend_schema(
     tags=['Authentication & Users'],
     summary='Resend verification email',
-    description='Send a new email verification link to an unverified user.'
+    description='Send a new email verification link to an unverified user.',
+    request=VerificationEmailRequestSerializer,
+    responses=MessageResponseSerializer
 )
 class ResendVerificationEmail(generics.GenericAPIView):
     swagger_fake_view = True
+    serializer_class = VerificationEmailRequestSerializer
 
     def post(self, request, *args, **kwargs):
-
         email = request.data.get('email')
 
         if not email:
@@ -137,7 +154,6 @@ class UserLogin(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
 
     def post(self, request):
-
         email = request.data.get('email')
         password = request.data.get('password')
 
@@ -146,13 +162,11 @@ class UserLogin(generics.GenericAPIView):
         ).first()
 
         if user:
-
             matched_password = user.check_password(
                 password
             )
 
             if matched_password:
-
                 if not user.is_verified:
                     return Response({
                         "details": "Email is not verified yet!",
@@ -176,7 +190,6 @@ class UserLogin(generics.GenericAPIView):
     description='Retrieve the authenticated user profile or update profile information.'
 )
 class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
-
     queryset = CustomUser.objects.all()
 
     permission_classes = [
@@ -187,7 +200,6 @@ class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
         return self.request.user
 
     def get_serializer_class(self):
-
         if self.request.method in [
             'PUT',
             'PATCH'
@@ -203,11 +215,9 @@ class RetrieveUpdateProfile(generics.RetrieveUpdateAPIView):
     description='Send a password reset email to the user.'
 )
 class ForgotPasswordView(generics.GenericAPIView):
-
     serializer_class = ForgotPasswordSerializer
 
     def post(self, request):
-
         serializer = self.get_serializer(
             data=request.data
         )
@@ -245,11 +255,9 @@ class ForgotPasswordView(generics.GenericAPIView):
     description='Reset the user password using a valid password reset token.'
 )
 class ResetPasswordView(generics.GenericAPIView):
-
     serializer_class = ResetPasswordSerializer
 
     def post(self, request, *args, **kwargs):
-
         serializer = self.get_serializer(
             data={
                 'token': kwargs.get('token'),

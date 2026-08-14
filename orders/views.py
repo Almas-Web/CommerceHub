@@ -1,6 +1,8 @@
 from django.db import transaction
+
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+
 from drf_spectacular.utils import extend_schema
 
 from .models import Order, OrderItem
@@ -12,23 +14,21 @@ from .serializers import (
 from cart.models import Cart
 
 
-# Order List & Create
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+
         return Order.objects.filter(
             user=self.request.user
         ).prefetch_related('items__product')
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-
         shipping_address = request.data.get('shipping_address')
 
         if not shipping_address:
@@ -102,38 +102,35 @@ class OrderListCreateView(generics.ListCreateAPIView):
         )
 
 
-# Order Detail
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class OrderDetailView(generics.RetrieveAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+
         return Order.objects.filter(
             user=self.request.user
         ).prefetch_related('items__product')
 
 
-# Cancel Order
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class CancelOrderView(generics.GenericAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+
         return Order.objects.filter(
             user=self.request.user
         ).prefetch_related('items__product')
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-
         order = self.get_object()
 
         if order.status != Order.Status.PENDING:
@@ -163,16 +160,15 @@ class CancelOrderView(generics.GenericAPIView):
         )
 
 
-# Admin Order List
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class AdminOrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+
         if self.request.user.role != 'ADMIN':
             return Order.objects.none()
 
@@ -181,11 +177,7 @@ class AdminOrderListView(generics.ListAPIView):
         ).select_related('user')
 
 
-# Admin Order Status Update
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class AdminOrderStatusUpdateView(generics.UpdateAPIView):
     serializer_class = AdminOrderUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -193,6 +185,9 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
     http_method_names = ['patch']
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
+
         if self.request.user.role != 'ADMIN':
             return Order.objects.none()
 
@@ -202,7 +197,6 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
 
     @transaction.atomic
     def update(self, request, *args, **kwargs):
-
         order = self.get_object()
         old_status = order.status
 
@@ -216,14 +210,12 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
 
         new_status = serializer.validated_data.get('status')
 
-        # Restore stock when admin cancels a pending/confirmed order
         if (
             new_status == Order.Status.CANCELLED
             and old_status != Order.Status.CANCELLED
         ):
             for item in order.items.select_related('product'):
                 product = item.product
-
                 product.stock += item.quantity
 
                 product.save(
@@ -238,16 +230,14 @@ class AdminOrderStatusUpdateView(generics.UpdateAPIView):
         )
 
 
-# Seller Order List
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class SellerOrderListView(generics.ListAPIView):
     serializer_class = SellerOrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
 
         if self.request.user.role != 'SELLER':
             return Order.objects.none()
@@ -259,11 +249,7 @@ class SellerOrderListView(generics.ListAPIView):
         ).select_related('user')
 
 
-# Seller Order Status Update
-
-@extend_schema(
-    tags=['Orders']
-)
+@extend_schema(tags=['Orders'])
 class SellerOrderStatusUpdateView(generics.UpdateAPIView):
     serializer_class = AdminOrderUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -271,6 +257,8 @@ class SellerOrderStatusUpdateView(generics.UpdateAPIView):
     http_method_names = ['patch']
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Order.objects.none()
 
         if self.request.user.role != 'SELLER':
             return Order.objects.none()
@@ -282,7 +270,6 @@ class SellerOrderStatusUpdateView(generics.UpdateAPIView):
         ).select_related('user')
 
     def update(self, request, *args, **kwargs):
-
         order = self.get_object()
 
         serializer = self.get_serializer(

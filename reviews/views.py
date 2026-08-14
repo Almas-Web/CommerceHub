@@ -10,13 +10,10 @@ from .permissions import IsCustomer
 from orders.models import OrderItem, Order
 
 
-# Review Create
-
 @extend_schema(
-    tags=['Reviews']
+    tags=["Reviews"]
 )
 class ReviewCreateView(generics.CreateAPIView):
-
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
@@ -26,11 +23,9 @@ class ReviewCreateView(generics.CreateAPIView):
     ]
 
     def perform_create(self, serializer):
-
         user = self.request.user
         product = serializer.validated_data["product"]
 
-        # Check whether customer purchased the product
         purchased = OrderItem.objects.filter(
             order__user=user,
             product=product,
@@ -43,12 +38,10 @@ class ReviewCreateView(generics.CreateAPIView):
                 "and received."
             )
 
-        # Prevent duplicate review
         if Review.objects.filter(
             product=product,
             user=user
         ).exists():
-
             raise ValidationError(
                 "You have already reviewed this product."
             )
@@ -56,18 +49,18 @@ class ReviewCreateView(generics.CreateAPIView):
         serializer.save(user=user)
 
 
-# Product Review List
-
 @extend_schema(
-    tags=['Reviews']
+    tags=["Reviews"]
 )
 class ProductReviewListView(generics.ListAPIView):
-
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        product_id = self.kwargs["product_id"]
+        product_id = self.kwargs.get("product_id")
+
+        if not product_id:
+            return Review.objects.none()
 
         return Review.objects.filter(
             product_id=product_id
@@ -77,13 +70,10 @@ class ProductReviewListView(generics.ListAPIView):
         ).order_by("-created_at")
 
 
-# Review Update
-
 @extend_schema(
-    tags=['Reviews']
+    tags=["Reviews"]
 )
 class ReviewUpdateView(generics.UpdateAPIView):
-
     serializer_class = ReviewSerializer
     permission_classes = [
         IsAuthenticated,
@@ -96,13 +86,10 @@ class ReviewUpdateView(generics.UpdateAPIView):
         )
 
 
-# Review Delete
-
 @extend_schema(
-    tags=['Reviews']
+    tags=["Reviews"]
 )
 class ReviewDeleteView(generics.DestroyAPIView):
-
     serializer_class = ReviewSerializer
     permission_classes = [
         IsAuthenticated,

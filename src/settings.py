@@ -166,7 +166,6 @@ REST_FRAMEWORK = {
 }
 # API Documentation Settings
 
-
 SPECTACULAR_SETTINGS = {
     'TITLE': 'CommerceHub API',
     'DESCRIPTION': 'Production-ready E-Commerce REST API',
@@ -175,41 +174,57 @@ SPECTACULAR_SETTINGS = {
 
     'COMPONENT_SPLIT_REQUEST': True,
 
+    'ENUM_NAME_OVERRIDES': {
+        'OrderStatusEnum': [
+            ('PENDING', 'Pending'),
+            ('CONFIRMED', 'Confirmed'),
+            ('PROCESSING', 'Processing'),
+            ('SHIPPED', 'Shipped'),
+            ('DELIVERED', 'Delivered'),
+            ('CANCELLED', 'Cancelled'),
+        ],
+        'PaymentStatusEnum': [
+            ('PENDING', 'Pending'),
+            ('SUCCESS', 'Success'),
+            ('FAILED', 'Failed'),
+            ('REFUNDED', 'Refunded'),
+        ],
+    },
+
     'TAGS': [
-    {
-        'name': 'Authentication & Users',
-        'description': 'User registration, authentication, email verification, profile and password management.',
-    },
-    {
-        'name': 'Categories',
-        'description': 'Product category management.',
-    },
-    {
-        'name': 'Products',
-        'description': 'Product management and product discovery.',
-    },
-    {
-        'name': 'Wishlist',
-        'description': 'Customer wishlist management.',
-    },
-    {
-        'name': 'Cart',
-        'description': 'Shopping cart management.',
-    },
-    {
-        'name': 'Orders',
-        'description': 'Order creation, management and order history.',
-    },
-    {
-        'name': 'Payments',
-        'description': 'Payment processing and payment management.',
-    },
-    {
-        'name': 'Reviews',
-        'description': 'Product reviews and ratings.',
-    },
-],
-    
+        {
+            'name': 'Authentication & Users',
+            'description': 'User registration, authentication, email verification, profile and password management.',
+        },
+        {
+            'name': 'Categories',
+            'description': 'Product category management.',
+        },
+        {
+            'name': 'Products',
+            'description': 'Product management and product discovery.',
+        },
+        {
+            'name': 'Wishlist',
+            'description': 'Customer wishlist management.',
+        },
+        {
+            'name': 'Cart',
+            'description': 'Shopping cart management.',
+        },
+        {
+            'name': 'Orders',
+            'description': 'Order creation, management and order history.',
+        },
+        {
+            'name': 'Payments',
+            'description': 'Payment processing and payment management.',
+        },
+        {
+            'name': 'Reviews',
+            'description': 'Product reviews and ratings.',
+        },
+    ],
 }
 # JWT Settings
 
