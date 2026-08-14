@@ -1,0 +1,52 @@
+# Environment
+.env
+.env.*
+
+# Virtual environment
+venv/
+.venv/
+
+# Git
+.git/
+.github/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local database
+db.sqlite3
+*.sqlite3
+
+# Media files
+media/
+
+# Existing collected static files
+staticfiles/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+docker-compose.yml
+docker-compose.prod.yml
+
+# Documentation / local files
+schema.txt
+
+# Temporary files
+*.tmp
+*.temp
