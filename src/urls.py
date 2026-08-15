@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -10,7 +11,19 @@ from drf_spectacular.views import (
 )
 
 
+def home(request):
+    return JsonResponse({
+        "message": "CommerceHub API is running",
+        "documentation": "/api/docs/",
+        "status": "healthy",
+    })
+
+
 urlpatterns = [
+    # Root / Health Check
+    path('', home, name='home'),
+
+    # Admin
     path('admin/', admin.site.urls),
 
     # API endpoints
@@ -24,7 +37,11 @@ urlpatterns = [
     path('api/reviews/', include('reviews.urls')),
 
     # API Documentation
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path(
+        'api/schema/',
+        SpectacularAPIView.as_view(),
+        name='schema',
+    ),
     path(
         'api/docs/',
         SpectacularSwaggerView.as_view(url_name='schema'),
