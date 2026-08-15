@@ -46,10 +46,10 @@ class UserSerializer(serializers.ModelSerializer):
             )
         )
 
-        #send_verification_email_task.delay(
-         #   user.id,
-          #  verification_link
-       # )
+        send_verification_email_task.delay(
+           user.id,
+          verification_link
+       )
 
         return user
 
